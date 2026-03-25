@@ -1,117 +1,101 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-<meta charset="UTF-8">
-<title>Kalkulator</title>
-
-<style>
-  body {
-    background: #000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    font-family: Arial;
-  }
-
-  .kalkulator {
-    width: 260px;
-    background: black;
-  }
-
-  .ekran {
-    color: white;
-    font-size: 40px;
-    text-align: right;
-    padding: 20px;
-    word-wrap: break-word;
-  }
-
-  .przyciski {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-  }
-
-  button {
-    height: 60px;
-    font-size: 20px;
-    border: none;
-    border-radius: 50%;
-    cursor: pointer;
-  }
-
-  .szare { background: #a5a5a5; }
-  .ciemne { background: #333; color: white; }
-  .pomaranczowe { background: orange; color: white; }
-
-  .zero {
-    grid-column: span 2;
-    border-radius: 30px;
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testowy Kalkulator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        .calculator {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+        }
+        input, button {
+            font-size: 1.2rem;
+            margin: 5px;
+            padding: 10px;
+        }
+        input {
+            width: 200px;
+        }
+    </style>
 </head>
-
 <body>
+    <div class="calculator">
+        <h2>Kalkulator Testowy</h2>
+        <input type="text" id="display" placeholder="0" readonly>
+        <br>
+        <button onclick="appendNumber('1')">1</button>
+        <button onclick="appendNumber('2')">2</button>
+        <button onclick="appendNumber('3')">3</button>
+        <button onclick="setOperation('+')">+</button>
+        <br>
+        <button onclick="appendNumber('4')">4</button>
+        <button onclick="appendNumber('5')">5</button>
+        <button onclick="appendNumber('6')">6</button>
+        <button onclick="setOperation('-')">-</button>
+        <br>
+        <button onclick="appendNumber('7')">7</button>
+        <button onclick="appendNumber('8')">8</button>
+        <button onclick="appendNumber('9')">9</button>
+        <button onclick="setOperation('*')">*</button>
+        <br>
+        <button onclick="appendNumber('0')">0</button>
+        <button onclick="clearDisplay()">C</button>
+        <button onclick="calculateResult()">=</button>
+        <button onclick="setOperation('/')">/</button>
+    </div>
 
-<div class="kalkulator">
-  <div class="ekran" id="ekran">0</div>
+    <script>
+        let currentInput = '';
+        let operation = null;
+        let previousInput = '';
 
-  <div class="przyciski">
-    <button class="szare" onclick="wyczysc()">C</button>
-    <button class="szare" onclick="usun()">←</button>
-    <button class="szare" onclick="dodaj('%')">%</button>
-    <button class="pomaranczowe" onclick="dodaj('/')">÷</button>
+        function appendNumber(num) {
+            currentInput += num;
+            document.getElementById('display').value = currentInput;
+        }
 
-    <button class="ciemne" onclick="dodaj('7')">7</button>
-    <button class="ciemne" onclick="dodaj('8')">8</button>
-    <button class="ciemne" onclick="dodaj('9')">9</button>
-    <button class="pomaranczowe" onclick="dodaj('*')">×</button>
+        function setOperation(op) {
+            if(currentInput === '') return;
+            if(previousInput !== '') calculateResult();
+            operation = op;
+            previousInput = currentInput;
+            currentInput = '';
+        }
 
-    <button class="ciemne" onclick="dodaj('4')">4</button>
-    <button class="ciemne" onclick="dodaj('5')">5</button>
-    <button class="ciemne" onclick="dodaj('6')">6</button>
-    <button class="pomaranczowe" onclick="dodaj('-')">−</button>
+        function calculateResult() {
+            if(previousInput === '' || currentInput === '') return;
+            let result;
+            const a = parseFloat(previousInput);
+            const b = parseFloat(currentInput);
+            switch(operation) {
+                case '+': result = a + b; break;
+                case '-': result = a - b; break;
+                case '*': result = a * b; break;
+                case '/': result = b !== 0 ? a / b : 'Błąd'; break;
+            }
+            currentInput = result.toString();
+            document.getElementById('display').value = currentInput;
+            previousInput = '';
+            operation = null;
+        }
 
-    <button class="ciemne" onclick="dodaj('1')">1</button>
-    <button class="ciemne" onclick="dodaj('2')">2</button>
-    <button class="ciemne" onclick="dodaj('3')">3</button>
-    <button class="pomaranczowe" onclick="dodaj('+')">+</button>
-
-    <button class="ciemne zero" onclick="dodaj('0')">0</button>
-    <button class="ciemne" onclick="dodaj('.')">.</button>
-    <button class="pomaranczowe" onclick="oblicz()">=</button>
-  </div>
-</div>
-
-<script>
-let ekran = document.getElementById("ekran");
-
-function dodaj(znak) {
-  if (ekran.innerText === "0") {
-    ekran.innerText = znak;
-  } else {
-    ekran.innerText += znak;
-  }
-}
-
-function wyczysc() {
-  ekran.innerText = "0";
-}
-
-function usun() {
-  ekran.innerText = ekran.innerText.slice(0, -1);
-  if (ekran.innerText === "") ekran.innerText = "0";
-}
-
-function oblicz() {
-  try {
-    ekran.innerText = eval(ekran.innerText);
-  } catch {
-    ekran.innerText = "Błąd";
-  }
-}
-</script>
-
+        function clearDisplay() {
+            currentInput = '';
+            previousInput = '';
+            operation = null;
+            document.getElementById('display').value = '';
+        }
+    </script>
 </body>
 </html>
